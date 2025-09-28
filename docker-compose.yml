@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: taskapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Albin@8590301089
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=your-secret-key-here
+      - DB_NAME=taskapp
+      - DB_USER=postgres
+      - DB_PASSWORD=Albin@8590301089
+      - DB_HOST=db
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/1
+      - HUGGINGFACE_API_KEY=your-huggingface-api-key-here
+
+volumes:
+  postgres_data:
+
+
+

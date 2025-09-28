@@ -77,17 +77,46 @@ A comprehensive Task & Project Management Web Application with integrated AI cha
    ```env
    SECRET_KEY=your-secret-key-here
    DEBUG=True
-   DB_NAME=taskmanager
+   DB_NAME=taskapp
    DB_USER=postgres
-   DB_PASSWORD=your-password
+   DB_PASSWORD=Albin@8590301089
    DB_HOST=localhost
    DB_PORT=5432
    REDIS_URL=redis://127.0.0.1:6379/1
    HUGGINGFACE_API_KEY=your-huggingface-api-key
    ```
 
-5. **Database setup**
+5. **PostgreSQL Database Setup**
+   
+   **Option A: Using Docker (Recommended)**
    ```bash
+   # Start PostgreSQL and Redis with Docker
+   docker-compose up -d db redis
+   
+   # Run the automated setup script
+   python setup_postgresql.py
+   ```
+   
+   **Option B: Manual Setup**
+   ```bash
+   # Install PostgreSQL (Ubuntu/Debian)
+   sudo apt-get install postgresql postgresql-contrib
+   
+   # Install PostgreSQL (macOS with Homebrew)
+   brew install postgresql
+   brew services start postgresql
+   
+   # Install PostgreSQL (Windows)
+   # Download from https://www.postgresql.org/download/windows/
+   
+   # Create database and user
+   sudo -u postgres psql
+   CREATE DATABASE taskapp;
+   CREATE USER postgres WITH PASSWORD 'Albin@8590301089';
+   GRANT ALL PRIVILEGES ON DATABASE taskapp TO postgres;
+   \q
+   
+   # Run Django migrations
    python manage.py makemigrations
    python manage.py migrate
    python manage.py createsuperuser
@@ -291,10 +320,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### Common Issues
 
-1. **Database Connection Error**
-   - Check PostgreSQL is running
+1. **PostgreSQL Database Connection Error**
+   - Check PostgreSQL is running: `sudo systemctl status postgresql` (Linux) or `brew services list | grep postgresql` (macOS)
    - Verify database credentials in `.env`
-   - Ensure database exists
+   - Ensure database exists: `psql -h localhost -U postgres -d taskapp`
+   - Check PostgreSQL logs: `sudo tail -f /var/log/postgresql/postgresql-*.log`
+   - Test connection: `python manage.py dbshell`
 
 2. **Redis Connection Error**
    - Check Redis is running
